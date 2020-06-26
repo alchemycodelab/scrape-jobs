@@ -1,0 +1,28 @@
+{
+  "name": "scrape-jobs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --verbose --runInBand --testLocationInResults",
+    "test:watch": "npm run test -- --watch",
+    "start": "node index.js",
+    "start:watch": "nodemon index.js"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^26.0.3",
+    "eslint": "^7.3.1",
+    "jest": "^26.1.0",
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "bull": "^3.14.0",
+    "dotenv": "^8.2.0"
+  }
+}

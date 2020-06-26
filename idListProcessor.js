@@ -1,14 +1,20 @@
 const { profileQueue } = require('./queue');
+const { scrapeIds } = require('./scrapeIDs');
 
 module.exports = job => {
   // scrape page
-  const letter = job.data.letter;
-  console.log(letter);
-  const ids = [1, 2, 3, 4];
+  return scrapeIds(job)
+    .then(ids => ids.forEach(id => {
+      profileQueue.add({ id });
+    }));
 
-  ids.forEach(id => {
-    profileQueue.add({ id });
-  });
-
-  return Promise.resolve('Done');
+  // return Promise.resolve('Done');
 };
+
+// const letter = job.data.letter;
+//   console.log(letter);
+//   const ids = [1, 2, 3, 4];
+
+//   ids.forEach(id => {
+//     profileQueue.add({ id });
+//   });

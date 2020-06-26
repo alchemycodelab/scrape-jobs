@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Queue = require('bull');
 const { setQueues } = require('bull-board');
 

@@ -13,11 +13,11 @@ const options = ({ max, durationInMinutes, attempts = 5 }) => ({
   }
 });
 
-const idListQueue = new Queue('id list scraper', process.env.REDIS_URL, options({ max: 50, durationInMinutes: 10 }));
-const profileQueue = new Queue('profile scraper', process.env.REDIS_URL, options({ max: 10, durationInMinutes: 5 }));
-const storageQueue = new Queue('storage', process.env.REDIS_URL);
+const idListQueue = new Queue('id list scraper', process.env.REDIS_URL);
+const profileQueue = new Queue('profile scraper', process.env.REDIS_URL, options({ max: 10, durationInMinutes: 1 }));
+const storageQueue = new Queue('storage', process.env.REDIS_URL, options({ max: 1, durationInMinutes: .5 }));
 
-setQueues([idListQueue, profileQueue]);
+setQueues([idListQueue, profileQueue, storageQueue]);
 
 module.exports = {
   idListQueue,

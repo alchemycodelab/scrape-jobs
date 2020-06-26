@@ -1,4 +1,5 @@
 require('./queue');
+
 const express = require('express');
 const app = express();
 const { UI } = require('bull-board');

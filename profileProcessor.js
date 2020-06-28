@@ -1,5 +1,8 @@
+require('dotenv').config();
+
 const puppeteer = require('puppeteer');
-const { storageQueue } = require('./queue');
+const mongoose = require('mongoose');
+const RawProfile = require('./lib/models/RawProfile');
 
 module.exports = async(job) => {
   const browser = await puppeteer.launch();
@@ -29,5 +32,14 @@ module.exports = async(job) => {
   const html = await page.evaluate(body => body.innerHTML, bodyHandle);
 
   await browser.close();
-  return storageQueue.add({ dpsstId: job.data.id, html });
+
+  mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+  });
+
+  return RawProfile
+    .create({ dpsstId: job.data.id, html })
+    .finally(() => mongoose.connection.close());
 };

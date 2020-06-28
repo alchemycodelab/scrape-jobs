@@ -1,10 +1,9 @@
 /* eslint-disable no-constant-condition */
 /* eslint-disable no-undef */
 const puppeteer = require('puppeteer');
+const { profileQueue } = require('./queue');
 
-let uniqueIdArray = [];
-
-const scrapeIds = async(job) => {
+module.exports = async(job) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -22,22 +21,17 @@ const scrapeIds = async(job) => {
       return [...element.querySelectorAll('#DataGridAgcyEmp tr').values()]
         .map(node => node.innerText)
         .map(row => row.split('\t'))
-        .map(row => (row[1]));
+        .map(row => row[1])
+        .filter(id => /^\d*$/.test(id));
     });
 
-    idArray.slice(1, -1).forEach(item => !uniqueIdArray.includes(item) ? uniqueIdArray.push(item) : item);
+    idArray.forEach(id => profileQueue.add({ id }, { jobId: id }));
 
     if(!await page.$('a[href*="ctl54$_ctl1"]')) break;
     await page.evaluate(() => __doPostBack('DataGridAgcyEmp$_ctl54$_ctl1', ''));
   } while(true);
 
   job.progress(100);
-  //   console.log(uniqueIdArray);
   await browser.close();
-  return uniqueIdArray;
 };
 
-module.exports = { 
-  scrapeIds,
-  uniqueIdArray
-};

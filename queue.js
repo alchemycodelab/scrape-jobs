@@ -3,7 +3,7 @@ require('dotenv').config();
 const Queue = require('bull');
 const { setQueues } = require('bull-board');
 
-const options = ({ max, durationInMinutes, attempts = 5 }) => ({
+const options = ({ max, durationInMinutes, attempts = 1 }) => ({
   limiter: {
     max,
     duration: 1000 * 60 * durationInMinutes
@@ -13,8 +13,8 @@ const options = ({ max, durationInMinutes, attempts = 5 }) => ({
   }
 });
 
-const idListQueue = new Queue('id list scraper', process.env.REDIS_URL);
-const profileQueue = new Queue('profile scraper', process.env.REDIS_URL, options({ max: 10, durationInMinutes: 1 }));
+const idListQueue = new Queue('id list scraper', process.env.REDIS_URL, options({ max: 1, durationInMinutes: 60 }));
+const profileQueue = new Queue('profile scraper', process.env.REDIS_URL, options({ max: 100, durationInMinutes: 1 }));
 const storageQueue = new Queue('storage', process.env.REDIS_URL, options({ max: 1, durationInMinutes: .5 }));
 
 setQueues([idListQueue, profileQueue, storageQueue]);

@@ -1,12 +1,8 @@
-const { profileQueue } = require('./queue');
-const { scrapeIds } = require('./scrapeIDs');
+const scrapeIds = require('./scrapeIDs');
 
 module.exports = job => {
   // scrape page
-  return scrapeIds(job)
-    .then(ids => ids.forEach(id => {
-      profileQueue.add({ id });
-    }));
+  return scrapeIds(job);
 
   // return Promise.resolve('Done');
 };

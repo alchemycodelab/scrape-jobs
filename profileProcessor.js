@@ -20,14 +20,20 @@ module.exports = async(job) => {
   await page.$eval('#DataGridAgcyEmp tr:nth-child(2) a', el => el.click());
 
   // Click Profile Report
-  await page.$('#TblOrgTitle');
-  await page.click('input[name="BtnProfile"]');
-
-  // Click Profile Report Again
-  await page.$('#TblOrgTitle');
-  await page.click('input[name="BtnProfile"]');
+  await Promise.all([
+    page.waitFor('#TblOrgTitle'),
+    page.click('input[name="BtnProfile"]'),
+    page.waitForNavigation()
+  ]);
+ 
+  await Promise.all([
+    page.waitForNavigation(),
+    page.waitFor('#FormEmpOptProfile'),
+    page.click('input[name="BtnProfile"]')
+  ]);
 
   // Scrape Employee Info
+  await page.waitFor('body');
   const bodyHandle = await page.$('body');
   const html = await page.evaluate(body => body.innerHTML, bodyHandle);
 

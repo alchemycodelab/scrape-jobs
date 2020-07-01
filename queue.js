@@ -14,7 +14,7 @@ const options = ({ max, durationInMinutes, attempts = 1 }) => ({
 });
 
 const idListQueue = new Queue('id list scraper', process.env.REDIS_URL, options({ max: 1, durationInMinutes: 60 }));
-const profileQueue = new Queue('profile scraper', process.env.REDIS_URL, options({ max: 100, durationInMinutes: 1 }));
+const profileQueue = new Queue('profile scraper', process.env.REDIS_URL, options({ max: 10, durationInMinutes: 1 }));
 const storageQueue = new Queue('storage', process.env.REDIS_URL, options({ max: 1, durationInMinutes: .5 }));
 
 setQueues([idListQueue, profileQueue, storageQueue]);

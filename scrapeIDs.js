@@ -4,7 +4,12 @@ const puppeteer = require('puppeteer');
 const { profileQueue } = require('./queue');
 
 module.exports = async(job) => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: [
+      'no-sandbox',
+      'disable-setuid-sandbox',
+    ]
+  });
   const page = await browser.newPage();
 
   await page.goto('http://dpsstnet.state.or.us/PublicInquiry_CJ/smsgoperson.aspx', { waitUntil: 'load' });
@@ -15,8 +20,7 @@ module.exports = async(job) => {
   job.progress(25);
 
   do{
-    await page.waitForNavigation({ waitUntil: 'load' });
-    let lastNameSearchTable = await page.$('#DataGridAgcyEmp');
+    let lastNameSearchTable = await page.waitFor('#DataGridAgcyEmp');
     const idArray = await lastNameSearchTable.evaluate(element => {
       return [...element.querySelectorAll('#DataGridAgcyEmp tr').values()]
         .map(node => node.innerText)
@@ -24,11 +28,12 @@ module.exports = async(job) => {
         .map(row => row[1])
         .filter(id => /^\d*$/.test(id));
     });
-
+    
     idArray.forEach(id => profileQueue.add({ id }, { jobId: id }));
-
+    
     if(!await page.$('a[href*="ctl54$_ctl1"]')) break;
     await page.evaluate(() => __doPostBack('DataGridAgcyEmp$_ctl54$_ctl1', ''));
+    await page.waitForNavigation({ waitUntil: 'load' });
   } while(true);
 
   job.progress(100);

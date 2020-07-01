@@ -5,7 +5,12 @@ const mongoose = require('mongoose');
 const RawProfile = require('./lib/models/RawProfile');
 
 module.exports = async(job) => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+    ]
+  });
   const page = await browser.newPage();
 
   // Search by DPSST ID
@@ -38,14 +43,4 @@ module.exports = async(job) => {
   const html = await page.evaluate(body => body.innerHTML, bodyHandle);
 
   await browser.close();
-
-  mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
-  });
-
-  return RawProfile
-    .create({ dpsstId: job.data.id, html })
-    .finally(() => mongoose.connection.close());
 };
